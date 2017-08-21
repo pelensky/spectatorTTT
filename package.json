@@ -4,7 +4,8 @@
   "description": "A front end to observe a Tic Tac Toe game using my Clojure Tic Tac Toe repo.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
   },
   "author": "Dan Pelensky",
   "license": "ISC",
