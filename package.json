@@ -4,7 +4,7 @@
   "description": "A front end to observe a Tic Tac Toe game using my Clojure Tic Tac Toe repo.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "build": "webpack",
     "watch": "webpack-dev-server --content-base dist"
   },
@@ -19,9 +19,18 @@
     "babel-loader": "^7.1.2",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
+    "jest": "^20.0.4",
+    "jest-nyan-reporter": "^1.0.2",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "webpack": "^3.5.5",
     "webpack-dev-server": "^2.7.1"
+  },
+  "jest": {
+    "reporters": [
+      ["jest-nyan-reporter", {
+        "suppressErrorReporter": false
+      }]
+    ]
   }
 }
