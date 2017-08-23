@@ -93,11 +93,18 @@ function receiveMessages(id) {
       return JSON.parse(message.Body);
     });
     var boardStates = bodies.map(function(message) {
-     return message.Message
+      return message.Message
     });
     var boards = boardStates.map(function(board) {
       var object = {};
-      object[id] = JSON.parse(betweenQuotes.exec(board)[0]);
+      object["id"] = JSON.parse(betweenQuotes.exec(board)[0]);
+      object["board"] = board.substr(64).slice(0, -2).split(' ').map(function(space) {
+        var number = parseInt(space);
+        if (number) {
+          return number
+        } else {
+          return null }
+      });
       return object;
     });
     console.log(boards);
