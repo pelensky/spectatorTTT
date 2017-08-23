@@ -2,7 +2,6 @@ var AWS = require('aws-sdk'), util = require('util');
 AWS.config.loadFromPath('./config.json');
 var sns = new AWS.SNS();
 var sqs = new AWS.SQS();
-
 const id = createUuid();
 const topicArn = 'arn:aws:sns:eu-west-1:549374948510:tic-tac-toe';
 
@@ -14,12 +13,10 @@ function getEndpoint(id) {
   return 'arn:aws:sqs:eu-west-1:549374948510:'.concat(id)
 }
 
-
 function createQueue(id, callback) {
   sqs.createQueue({
     'QueueName': id
   }, function (err, result) {
-
     if (err !== null) {
       console.log(util.inspect(err));
       return;
@@ -36,13 +33,11 @@ function createSubscription(id) {
     'Endpoint': getEndpoint(id),
   }
   sns.subscribe(params, function (err, result) {
-
     if (err !== null) {
       console.log(util.inspect(err));
       return;
     }
   });
-
 }
 
 function addPermissions(id) {
@@ -91,32 +86,32 @@ function receiveMessages(id) {
 }
 
 var parseData = function(data) {
-      var betweenQuotes = /"([^"]*)"/
-      var bodies = data.Messages.map(function(message) {
-        return JSON.parse(message.Body);
-      });
-      var boardStates = bodies.map(function(message) {
-        return message.Message
-      });
-      var boards = boardStates.map(function(board) {
-        var object = {};
-        object["id"] = JSON.parse(betweenQuotes.exec(board)[0]);
-        object["board"] = board.substr(64).slice(0, -2).split(' ').map(function(space) {
-          return Number(space);
-        });
-        return object;
-      });
-
-      console.log(boards);
+  var betweenQuotes = /"([^"]*)"/
+  var bodies = data.Messages.map(function(message) {
+    return JSON.parse(message.Body);
+  });
+  var boardStates = bodies.map(function(message) {
+    return message.Message
+  });
+  var boards = boardStates.map(function(board) {
+    var object = {};
+    object["id"] = JSON.parse(betweenQuotes.exec(board)[0]);
+    object["board"] = board.substr(64).slice(0, -2).split(' ').map(function(space) {
+      return Number(space);
+    });
+    return object;
+  });
+  console.log(boards);
+  return boards;
 }
 
 var removeFromQueue = function(id, message) {
-   sqs.deleteMessage({
-      QueueUrl: getQueueUrl(id),
-      ReceiptHandle: message.ReceiptHandle
-   }, function(err, data) {
-      err && console.log(err);
-   });
+  sqs.deleteMessage({
+    QueueUrl: getQueueUrl(id),
+    ReceiptHandle: message.ReceiptHandle
+  }, function(err, data) {
+    err && console.log(err);
+  });
 };
 
 function createUuid() {
@@ -132,5 +127,3 @@ function createAndSubscribe(id) {
     addPermissions(id);
   })
 }
-//createAndSubscribe('id');
-receiveMessages('id');
