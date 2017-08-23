@@ -87,13 +87,20 @@ function receiveMessages(id) {
       console.log(err, err.stack);
       return;
     }
+    var betweenQuotes = /"([^"]*)"/
+
     var bodies = data.Messages.map(function(message) {
       return JSON.parse(message.Body);
     });
     var boardStates = bodies.map(function(message) {
      return message.Message
     });
-    console.log(boardStates);
+    var boards = boardStates.map(function(board) {
+      var object = {};
+      object[id] = JSON.parse(betweenQuotes.exec(board)[0]);
+      return object;
+    });
+    console.log(boards);
   });
 }
 
