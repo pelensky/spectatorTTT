@@ -30,8 +30,6 @@ function createQueue(id, callback) {
 }
 
 function createSubscription(id) {
-  console.log("Called createSubscription");
-  console.log(id);
   var params = {
     'TopicArn': topicArn,
     'Protocol': 'sqs',
@@ -85,8 +83,17 @@ function receiveMessages(id) {
   };
 
   sqs.receiveMessage(params, function(err, data) {
-    if (err) console.log(err, err.stack);
-    else     console.log(data);
+    if (err) {
+      console.log(err, err.stack);
+      return;
+    }
+    var bodies = data.Messages.map(function(message) {
+      return JSON.parse(message.Body);
+    });
+    var boardStates = bodies.map(function(message) {
+     return message.Message
+    });
+    console.log(boardStates);
   });
 }
 
@@ -97,13 +104,11 @@ function createUuid() {
   });
 }
 
-function createAndSubscribe() {
-  const id = createUuid();
+function createAndSubscribe(id) {
   createQueue(id, function() {
-    console.log("Called anon");
     createSubscription(id);
     addPermissions(id);
   })
 }
-createAndSubscribe();
-
+//createAndSubscribe('id');
+receiveMessages('id');
