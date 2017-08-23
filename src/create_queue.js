@@ -100,10 +100,7 @@ function receiveMessages(id) {
       object["id"] = JSON.parse(betweenQuotes.exec(board)[0]);
       object["board"] = board.substr(64).slice(0, -2).split(' ').map(function(space) {
         var number = parseInt(space);
-        if (number) {
-          return number
-        } else {
-          return null }
+        return (number) ? number : null;
       });
       return object;
     });
