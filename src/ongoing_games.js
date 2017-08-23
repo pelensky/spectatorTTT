@@ -1,5 +1,7 @@
 var AWS = require('aws-sdk'), util = require('util');
-AWS.config.loadFromPath('./config.json');
+var config = new AWS.Config({
+  accessKeyId: 'AKIAJ53EDWLDRSDINV5A', secretAccessKey: '7eVrB1FnCfZrNfhaUmzPHBCJCg0yMfaVuOO', region: 'eu-west-1'
+});
 var sns = new AWS.SNS();
 var sqs = new AWS.SQS();
 const id = createUuid();
@@ -69,7 +71,7 @@ function addPermissions(id) {
   });
 }
 
-function receiveMessages(id) {
+export function receiveMessages(id) {
   var params = {
     QueueUrl: getQueueUrl(id),
     MaxNumberOfMessages: 1,
@@ -121,7 +123,7 @@ function createUuid() {
   });
 }
 
-function createAndSubscribe(id) {
+export function createAndSubscribe(id) {
   createQueue(id, function() {
     createSubscription(id);
     addPermissions(id);
