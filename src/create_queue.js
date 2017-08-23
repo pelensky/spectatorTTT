@@ -55,7 +55,7 @@ function addPermissions(id) {
       "Principal": {
         "AWS": "*"
       },
-      "Action": "sqs:SendMessage",
+      "Action": ["sqs:SendMessage","sqs:DeleteMessage"],
       "Resource": getEndpoint(id),
     }
     ]
@@ -77,36 +77,47 @@ function addPermissions(id) {
 function receiveMessages(id) {
   var params = {
     QueueUrl: getQueueUrl(id),
-    MaxNumberOfMessages: 10,
+    MaxNumberOfMessages: 1,
     VisibilityTimeout: 0,
     WaitTimeSeconds: 0
   };
 
   sqs.receiveMessage(params, function(err, data) {
-    if (err) {
-      console.log(err, err.stack);
-      return;
+    if (data.Messages) {
+      parseData(data)
+      removeFromQueue(id, data.Messages[0])
     }
-    var betweenQuotes = /"([^"]*)"/
-
-    var bodies = data.Messages.map(function(message) {
-      return JSON.parse(message.Body);
-    });
-    var boardStates = bodies.map(function(message) {
-      return message.Message
-    });
-    var boards = boardStates.map(function(board) {
-      var object = {};
-      object["id"] = JSON.parse(betweenQuotes.exec(board)[0]);
-      object["board"] = board.substr(64).slice(0, -2).split(' ').map(function(space) {
-        var number = parseInt(space);
-        return (number) ? number : null;
-      });
-      return object;
-    });
-    console.log(boards);
   });
 }
+
+var parseData = function(data) {
+      var betweenQuotes = /"([^"]*)"/
+      var bodies = data.Messages.map(function(message) {
+        return JSON.parse(message.Body);
+      });
+      var boardStates = bodies.map(function(message) {
+        return message.Message
+      });
+      var boards = boardStates.map(function(board) {
+        var object = {};
+        object["id"] = JSON.parse(betweenQuotes.exec(board)[0]);
+        object["board"] = board.substr(64).slice(0, -2).split(' ').map(function(space) {
+          return Number(space);
+        });
+        return object;
+      });
+
+      console.log(boards);
+}
+
+var removeFromQueue = function(id, message) {
+   sqs.deleteMessage({
+      QueueUrl: getQueueUrl(id),
+      ReceiptHandle: message.ReceiptHandle
+   }, function(err, data) {
+      err && console.log(err);
+   });
+};
 
 function createUuid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
