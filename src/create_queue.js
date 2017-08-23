@@ -11,53 +11,40 @@ function getQueueUrl(id) {
 }
 
 function getEndpoint(id) {
-  return 'arn:aws:sqs:eu-west-1:549374948510:demo'.concat(id)
+  return 'arn:aws:sqs:eu-west-1:549374948510:'.concat(id)
 }
 
 
-function createQueue() {
+function createQueue(id, callback) {
   sqs.createQueue({
-    'QueueName': 'demo'
+    'QueueName': id
   }, function (err, result) {
 
     if (err !== null) {
       console.log(util.inspect(err));
       return;
     }
+    callback();
     return result.QueueUrl;
-  });
-}
-
-function getQueueInfo(id) {
-
-  sqs.getQueueAttributes({
-    QueueUrl: "https://sqs.eu-west-1.amazonaws.com/549374948510/".concat(id),
-    AttributeNames: ["QueueArn"]
-  }, function (err, result) {
-
-    if (err !== null) {
-      console.log(util.inspect(err));
-      return;
-    }
-    console.log(util.inspect(result));
-  });
+  })
 }
 
 function createSubscription(id) {
-  sns.subscribe({
+  console.log("Called createSubscription");
+  console.log(id);
+  var params = {
     'TopicArn': topicArn,
     'Protocol': 'sqs',
     'Endpoint': getEndpoint(id),
-  }, function (err, result) {
+  }
+  sns.subscribe(params, function (err, result) {
 
     if (err !== null) {
       console.log(util.inspect(err));
       return;
     }
-
-    console.log(util.inspect(result));
-
   });
+
 }
 
 function addPermissions(id) {
@@ -70,13 +57,8 @@ function addPermissions(id) {
       "Principal": {
         "AWS": "*"
       },
-      "Action": "SQS:SendMessage",
+      "Action": "sqs:SendMessage",
       "Resource": getEndpoint(id),
-      "Condition": {
-        "ArnEquals": {
-          "aws:SourceArn": topicArn
-        }
-      }
     }
     ]
   };
@@ -87,13 +69,24 @@ function addPermissions(id) {
       'Policy': JSON.stringify(attributes)
     }
   }, function (err, result) {
-
     if (err !== null) {
       console.log(util.inspect(err));
       return;
     }
+  });
+}
 
-    console.log(util.inspect(result));
+function receiveMessages(id) {
+  var params = {
+    QueueUrl: getQueueUrl(id),
+    MaxNumberOfMessages: 10,
+    VisibilityTimeout: 0,
+    WaitTimeSeconds: 0
+  };
+
+  sqs.receiveMessage(params, function(err, data) {
+    if (err) console.log(err, err.stack);
+    else     console.log(data);
   });
 }
 
@@ -104,4 +97,13 @@ function createUuid() {
   });
 }
 
-addPermissions("demo");
+function createAndSubscribe() {
+  const id = createUuid();
+  createQueue(id, function() {
+    console.log("Called anon");
+    createSubscription(id);
+    addPermissions(id);
+  })
+}
+createAndSubscribe();
+
