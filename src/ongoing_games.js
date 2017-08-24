@@ -20,9 +20,11 @@ function createQueue(id, callback) {
     'QueueName': id
   }, function (err, result) {
     if (err !== null) {
+      console.log(AWS.config.region)
       console.log(util.inspect(err));
       return;
     }
+  console.log(results)
     callback();
     return result.QueueUrl;
   })
@@ -116,7 +118,7 @@ var removeFromQueue = function(id, message) {
   });
 };
 
-function createUuid() {
+export function createUuid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
     var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
     return v.toString(16);
@@ -124,6 +126,7 @@ function createUuid() {
 }
 
 export function createAndSubscribe(id) {
+  AWS.config.update({region: 'eu-west-1'});
   createQueue(id, function() {
     createSubscription(id);
     addPermissions(id);
