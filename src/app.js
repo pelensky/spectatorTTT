@@ -83,4 +83,3 @@ class Game extends React.Component {
 
 const app = document.getElementById('app')
 ReactDOM.render(<Game />, app)
-

@@ -130,5 +130,3 @@ function createAndSubscribe(id) {
     addPermissions(id);
   })
 }
-
-
