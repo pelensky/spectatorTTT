@@ -31,7 +31,7 @@ class Board extends React.Component {
   convertBoard() {
     const boardState = {
       "id": "123233425234",
-      "board" : [0, 4, 3, 6, 7]
+      "board" : [0,4,6, 7, 1, 2]
     }
     this.state.id = boardState.id
     for (var i = 0; i < boardState.board.length; i++){
@@ -69,8 +69,8 @@ class Board extends React.Component {
 class Game extends React.Component {
 
   render() {
-    const id = createUuid()
-    createAndSubscribe(id)
+//    const id = createUuid()
+    // createAndSubscribe(id)
     return (
       <div className="game">
       <div className="game-board">

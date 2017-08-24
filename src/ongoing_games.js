@@ -1,9 +1,7 @@
 var AWS = require('aws-sdk'), util = require('util');
-var config = new AWS.Config({
-  accessKeyId: 'AKIAJ53EDWLDRSDINV5A', secretAccessKey: '7eVrB1FnCfZrNfhaUmzPHBCJCg0yMfaVuOO', region: 'eu-west-1'
-});
-var sns = new AWS.SNS();
-var sqs = new AWS.SQS();
+
+var sns = new AWS.SNS({region: 'eu-west-1'});
+var sqs = new AWS.SQS({region: 'eu-west-1'});
 const id = createUuid();
 const topicArn = 'arn:aws:sns:eu-west-1:549374948510:tic-tac-toe';
 
@@ -24,7 +22,7 @@ function createQueue(id, callback) {
       console.log(util.inspect(err));
       return;
     }
-  console.log(results)
+  console.log(result)
     callback();
     return result.QueueUrl;
   })
@@ -73,7 +71,7 @@ function addPermissions(id) {
   });
 }
 
-export function receiveMessages(id) {
+function receiveMessages(id) {
   var params = {
     QueueUrl: getQueueUrl(id),
     MaxNumberOfMessages: 1,
@@ -118,14 +116,14 @@ var removeFromQueue = function(id, message) {
   });
 };
 
-export function createUuid() {
+function createUuid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
     var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
     return v.toString(16);
   });
 }
 
-export function createAndSubscribe(id) {
+function createAndSubscribe(id) {
   AWS.config.update({region: 'eu-west-1'});
   createQueue(id, function() {
     createSubscription(id);
