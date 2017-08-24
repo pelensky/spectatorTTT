@@ -86,25 +86,10 @@ function receiveMessages(id) {
     }
   });
 }
-
 var parseData = function(data) {
-  var betweenQuotes = /"([^"]*)"/
-  var bodies = data.Messages.map(function(message) {
-    return JSON.parse(message.Body);
-  });
-  var boardStates = bodies.map(function(message) {
-    return message.Message
-  });
-  var boards = boardStates.map(function(board) {
-    var object = {};
-    object["id"] = JSON.parse(betweenQuotes.exec(board)[0]);
-    object["board"] = board.substr(64).slice(0, -2).split(' ').map(function(space) {
-      return Number(space);
-    });
-    return object;
-  });
-  console.log(boards);
-  return boards;
+  var boardState = JSON.parse(JSON.parse(data.Messages[0].Body).Message)
+  console.log(boardState)
+  return boardState;
 }
 
 var removeFromQueue = function(id, message) {
@@ -130,3 +115,6 @@ function createAndSubscribe(id) {
     addPermissions(id);
   })
 }
+
+// createAndSubscribe("daan");
+ receiveMessages("daan");
