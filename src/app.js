@@ -16,6 +16,7 @@ class Board extends React.Component {
     super();
     this.state = {
       spaces: Array(9).fill(null),
+      id: null
     };
   }
 
@@ -32,6 +33,7 @@ class Board extends React.Component {
       "id": "123233425234",
       "board" : [0, 4, 3, 6, 7]
     }
+    this.state.id = boardState.id
     for (var i = 0; i < boardState.board.length; i++){
       this.state.spaces[boardState.board[i]] = (i % 2 == 0) ? "X" : "O"
     }
@@ -40,8 +42,10 @@ class Board extends React.Component {
 
   render() {
     this.convertBoard()
+    let status = this.state.id
     return (
       <div>
+      <div className="status">{status}</div>
       <div className="board-row">
       {this.renderSpace(0)}
       {this.renderSpace(1)}
