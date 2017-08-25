@@ -69,8 +69,6 @@ class Board extends React.Component {
 class Game extends React.Component {
 
   render() {
-//    const id = createUuid()
-    // createAndSubscribe(id)
     return (
       <div className="game">
       <div className="game-board">
@@ -81,5 +79,32 @@ class Game extends React.Component {
   }
 }
 
+class Spectator extends React.Component {
+
+  constructor() {
+    super();
+    this.state = {
+      spectatorId: createUuid(),
+      games: []
+    };
+    createAndSubscribe(this.state.spectatorId)
+    console.log(this.state)
+  }
+
+  getGames() {
+
+  }
+
+  render() {
+    return (
+    <div className="spectator">
+      You are spectator {this.state.spectatorId}
+      <Game />
+    </div>
+    )
+  }
+
+}
+
 const app = document.getElementById('app')
-ReactDOM.render(<Game />, app)
+ReactDOM.render(<Spectator />, app)
