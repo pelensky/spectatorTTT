@@ -25,7 +25,6 @@ function createQueue(id, callback) {
       console.log(util.inspect(err));
       return;
     }
-  console.log(result)
     callback();
     return result.QueueUrl;
   })
@@ -74,7 +73,7 @@ function addPermissions(id) {
   });
 }
 
-function receiveMessages(id) {
+export function receiveMessages(id) {
   var params = {
     QueueUrl: getQueueUrl(id),
     MaxNumberOfMessages: 1,
@@ -83,15 +82,17 @@ function receiveMessages(id) {
   };
 
   sqs.receiveMessage(params, function(err, data) {
-    if (data.Messages) {
-      parseData(data)
+    if (data.Messages.length > 0) {
+      var parsed = parseData(data)
       removeFromQueue(id, data.Messages[0])
+      console.log(parsed)
+      return parsed
     }
   });
 }
+
 var parseData = function(data) {
   var boardState = JSON.parse(JSON.parse(data.Messages[0].Body).Message)
-  console.log(boardState)
   return boardState;
 }
 

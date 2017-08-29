@@ -39,8 +39,6 @@
     ]
   },
   "dependencies": {
-    "aws-sdk": "^2.101.0",
-    "dotenv": "^4.0.0",
-    "dotenv-webpack": "^1.5.4"
+    "aws-sdk": "^2.101.0"
   }
 }

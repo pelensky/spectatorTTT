@@ -84,23 +84,34 @@ class Spectator extends React.Component {
   constructor() {
     super();
     this.state = {
-      spectatorId: createUuid(),
-      games: []
-    };
-    createAndSubscribe(this.state.spectatorId)
+      spectatorId: "DAN", //TODO CHANGE ME
+      isSubscribed: false,
+      games: {}
+    }
+
+    this.subscribe()
     console.log(this.state)
   }
 
-  getGames() {
+  subscribe() {
+    if (!this.state.isSubscribed) {
+      createAndSubscribe(this.state.spectatorId)
+      this.state.isSubscribed = true
+    }
+    this.getGames()
+  }
 
+  getGames() {
+    var gameState = receiveMessages(this.state.spectatorId)
+    console.log(gameState)
   }
 
   render() {
     return (
-    <div className="spectator">
+      <div className="spectator">
       You are spectator {this.state.spectatorId}
       <Game />
-    </div>
+      </div>
     )
   }
 
