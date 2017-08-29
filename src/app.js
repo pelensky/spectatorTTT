@@ -105,11 +105,19 @@ class Spectator extends React.Component {
     receiveMessages(this.state.spectatorId, this.state.games)
   }
 
+  showGames() {
+    for (var game in this.state.games) {
+      <div>
+        <Game id={game.id} size={game.size} board={game.board} />
+        </div>
+    }
+  }
+
   render() {
     return (
       <div className="spectator">
       You are spectator {this.state.spectatorId}
-      <Game />
+      {this.showGames()}
       </div>
     )
   }
