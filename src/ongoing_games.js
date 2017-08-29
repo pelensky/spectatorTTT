@@ -17,7 +17,7 @@ function getEndpoint(id) {
   return 'arn:aws:sqs:eu-west-1:549374948510:'.concat(id)
 }
 
-function createQueue(id, callback) {
+function createQueueOld(id, callback) {
   sqs.createQueue({
     'QueueName': id
   }, function (err, result) {
@@ -27,6 +27,19 @@ function createQueue(id, callback) {
     }
     callback();
     return result.QueueUrl;
+  })
+}
+
+export function createAndSubscribe(id) {
+  sqs.createQueue({
+    'QueueName': id
+  }, function (err, result) {
+    if (err !== null) {
+      console.log(util.inspect(err));
+      return;
+    }
+    createSubscription(id);
+    addPermissions(id);
   })
 }
 
@@ -72,15 +85,6 @@ function addPermissions(id) {
     }
   });
 }
-function onRecieve(err, data, games, id) {
-    if (data.Messages.length > 0) {
-      var parsed = parseData(data)
-      removeFromQueue(data.Messages[0], id)
-      console.log(parsed)
-      var uuid = parsed.uuid;
-      games[uuid] = parsed;
-    }
-}
 
 export function receiveMessages(id, games) {
   var params = {
@@ -90,7 +94,13 @@ export function receiveMessages(id, games) {
     WaitTimeSeconds: 0
   };
   sqs.receiveMessage(params, function(err, data) {
-    onRecieve(err, data, games, id)
+    if (data.Messages.length > 0) {
+      var parsed = parseData(data)
+      removeFromQueue(data.Messages[0], id)
+      console.log(parsed)
+      var uuid = parsed.uuid;
+      games[uuid] = parsed;
+    }
   });
 }
 
@@ -115,10 +125,4 @@ export function createUuid() {
   });
 }
 
-export function createAndSubscribe(id) {
-  AWS.config.update({region: 'eu-west-1'});
-  createQueue(id, function() {
-    createSubscription(id);
-    addPermissions(id);
-  })
-}
+
