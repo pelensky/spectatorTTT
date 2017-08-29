@@ -72,22 +72,25 @@ function addPermissions(id) {
     }
   });
 }
+function onRecieve(err, data, games, id) {
+    if (data.Messages.length > 0) {
+      var parsed = parseData(data)
+      removeFromQueue(data.Messages[0], id)
+      console.log(parsed)
+      var uuid = parsed.uuid;
+      games[uuid] = parsed;
+    }
+}
 
-export function receiveMessages(id) {
+export function receiveMessages(id, games) {
   var params = {
     QueueUrl: getQueueUrl(id),
     MaxNumberOfMessages: 1,
     VisibilityTimeout: 0,
     WaitTimeSeconds: 0
   };
-
   sqs.receiveMessage(params, function(err, data) {
-    if (data.Messages.length > 0) {
-      var parsed = parseData(data)
-      removeFromQueue(id, data.Messages[0])
-      console.log(parsed)
-      return parsed
-    }
+    onRecieve(err, data, games, id)
   });
 }
 
@@ -96,7 +99,7 @@ var parseData = function(data) {
   return boardState;
 }
 
-var removeFromQueue = function(id, message) {
+var removeFromQueue = function(message, id) {
   sqs.deleteMessage({
     QueueUrl: getQueueUrl(id),
     ReceiptHandle: message.ReceiptHandle

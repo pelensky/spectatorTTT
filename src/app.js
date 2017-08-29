@@ -102,8 +102,7 @@ class Spectator extends React.Component {
   }
 
   getGames() {
-    var gameState = receiveMessages(this.state.spectatorId)
-    console.log(gameState)
+    receiveMessages(this.state.spectatorId, this.state.games)
   }
 
   render() {
