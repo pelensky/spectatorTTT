@@ -17,19 +17,6 @@ function getEndpoint(id) {
   return 'arn:aws:sqs:eu-west-1:549374948510:'.concat(id)
 }
 
-function createQueueOld(id, callback) {
-  sqs.createQueue({
-    'QueueName': id
-  }, function (err, result) {
-    if (err !== null) {
-      console.log(util.inspect(err));
-      return;
-    }
-    callback();
-    return result.QueueUrl;
-  })
-}
-
 export function createAndSubscribe(id) {
   sqs.createQueue({
     'QueueName': id
@@ -86,7 +73,7 @@ function addPermissions(id) {
   });
 }
 
-export function receiveMessages(id, games) {
+export function receiveMessages(id, game) {
   var params = {
     QueueUrl: getQueueUrl(id),
     MaxNumberOfMessages: 1,
@@ -97,9 +84,7 @@ export function receiveMessages(id, games) {
     if (data.Messages.length > 0) {
       var parsed = parseData(data)
       removeFromQueue(data.Messages[0], id)
-      games.push(parsed.uuid);
-      games.push(parsed.size);
-      games.push(parsed.board);
+      game = parsed;
     }
   });
 }

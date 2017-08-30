@@ -91,48 +91,40 @@ class Spectator extends React.Component {
       isSubscribed: false,
       games: []
     }
+    this.getGames = this.getGames.bind(this)
   }
 
   componentDidMount() {
-    this.subscribe().then(this.getGames()).then(this.showGames())
+    this.subscribe(this.getGames(this.showGames()))
   }
 
-  subscribe() {
-    var state = this.state
-    return new Promise(function(resolve,reject) {
-      if (!state.isSubscribed) {
-        createAndSubscribe(state.spectatorId)
-        state.isSubscribed = true
-        if (state.isSubscribed) {
-          resolve(console.log("Successfully subscribed"))
-        } else {
-          reject(console.log("error"))
-        }
+  subscribe(callback) {
+    if (!state.isSubscribed) {
+      createAndSubscribe(state.spectatorId)
+      state.isSubscribed = true
+      if (state.isSubscribed) {
+        resolve(console.log("Successfully subscribed"))
+        callback
+      } else {
+        console.log("error")
       }
-    })}
+    }
+  }
 
-  getGames() {
-    var id = this.state.spectatorId
-    var games = this.state.games
-    return new Promise(function (resolve, reject) {
-      receiveMessages(id, games)
-      setTimeout(function(result) {
-        if (games.length > 0) {
-          resolve(console.log("success"))
-        } else {
-          reject(console.log("failure"))
-        }}, 500)
-    })
+  getGames(callback) {
+    receiveMessages(this.state.spectatorId, game)
+    if (game) {
+      this.setState({games: game})
+      callback()
+    } else {
+      console.log("failure")
+    }
   }
 
 
   showGames() {
-    var board = this.state.games[2]
-    var size = this.state.games[1]
-    var id = this.state.games[0]
-    if (board) {
-      this.setState(this.state.game = [])
-      return <div> <Game uuid={id} size={size} board={board} /> </div>
+    if (this.state.games) {
+      return <div> <Game uuid={this.state.uuid} size={this.state.size} board={this.state.board} /> </div>
     } else {
       return <span> No current games </span>
     }
@@ -140,13 +132,9 @@ class Spectator extends React.Component {
 
   render() {
     return (
-      <div>
       <div className="spectator">
       You are spectator {this.state.spectatorId}
-      </div>
-      <div className="games">
-      {this.showGames}
-      </div>
+      {this.showGames()}
       </div>
     )
   }
