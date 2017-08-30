@@ -12,12 +12,16 @@ function Space(props) {
 }
 
 class Board extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
-      spaces: Array(9).fill(null),
-      id: null
+      spaces: []
     };
+    console.log(this.props)
+  }
+
+  componentDidMount() {
+    this.convertBoard()
   }
 
   renderSpace(i) {
@@ -29,16 +33,15 @@ class Board extends React.Component {
   }
 
   convertBoard() {
-    this.state.id = this.props.uuid
+    var board = []
     for (var i = 0; i < this.props.board.length; i++){
-      this.state.spaces[this.props.board] = (i % 2 == 0) ? "X" : "O"
+      board[this.props.board[i]] = (i % 2 == 0) ? "X" : "O"
     }
-
+    console.log(board)
+    this.setState({spaces: board})
   }
 
   render() {
-    this.convertBoard()
-    let status = this.state.id
     return (
       <div>
       <div className="status">{status}</div>
@@ -87,6 +90,7 @@ class Spectator extends React.Component {
       isSubscribed: false,
       games: []
     }
+    this.componentDidMount = this.componentDidMount.bind(this)
     this.getGames = this.getGames.bind(this)
     this.setGameState = this.setGameState.bind(this)
     this.showGames = this.showGames.bind(this)
