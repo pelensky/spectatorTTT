@@ -63,9 +63,8 @@ class Board extends React.Component {
 }
 
 class Game extends React.Component {
-  constructor() {
-    super()
-    console.log(this.props)
+  constructor(props) {
+    super(props)
   }
 
   render() {
