@@ -17,7 +17,6 @@ class Board extends React.Component {
     this.state = {
       spaces: []
     };
-    console.log(this.props)
   }
 
   componentDidMount() {
@@ -37,7 +36,6 @@ class Board extends React.Component {
     for (var i = 0; i < this.props.board.length; i++){
       board[this.props.board[i]] = (i % 2 == 0) ? "X" : "O"
     }
-    console.log(board)
     this.setState({spaces: board})
   }
 
@@ -113,6 +111,10 @@ class Spectator extends React.Component {
     }
   }
 
+  findNewBoard() {
+    setInterval( () => this.getGames(), 1000)
+  }
+
   getGames() {
     let game = []
     receiveMessages(this.state.spectatorId, game, this.setGameState.bind(null, game, this.showGames))
@@ -121,8 +123,7 @@ class Spectator extends React.Component {
   setGameState(game, callback) {
     var gameState = game[0]
     if (gameState) {
-      this.setState({games: gameState})
-      callback()
+      this.setState({games: gameState}, callback)
     } else {
       console.log("No games to display")
     }
@@ -130,6 +131,7 @@ class Spectator extends React.Component {
 
 
   showGames() {
+    console.log(this.state.games.board)
     if (this.state.games.board) {
       return <div> <Game uuid={this.state.games.uuid} size={this.state.games.size} board={this.state.games.board} /> </div>
     } else {
