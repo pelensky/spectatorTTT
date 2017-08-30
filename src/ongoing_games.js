@@ -97,9 +97,9 @@ export function receiveMessages(id, games) {
     if (data.Messages.length > 0) {
       var parsed = parseData(data)
       removeFromQueue(data.Messages[0], id)
-      console.log(parsed)
-      var uuid = parsed.uuid;
-      games[uuid] = parsed;
+      games.push(parsed.uuid);
+      games.push(parsed.size);
+      games.push(parsed.board);
     }
   });
 }

@@ -29,18 +29,16 @@ class Board extends React.Component {
   }
 
   convertBoard() {
-    const boardState = {
-      "id": "123233425234",
-      "board" : [0,4,6, 7, 1, 2]
-    }
-    this.state.id = boardState.id
-    for (var i = 0; i < boardState.board.length; i++){
-      this.state.spaces[boardState.board[i]] = (i % 2 == 0) ? "X" : "O"
+    this.state.id = this.props[0].uuid
+    for (var i = 0; i < this.props[0].board.length; i++){
+      this.state.spaces[this.props[0].board[i]] = (i % 2 == 0) ? "X" : "O"
     }
 
   }
 
   render() {
+    console.log(this.props)
+    console.log(this.state)
     this.convertBoard()
     let status = this.state.id
     return (
@@ -67,12 +65,17 @@ class Board extends React.Component {
 }
 
 class Game extends React.Component {
+  constructor() {
+    super()
+    console.log("in Game constructor")
+    console.log(this.props)
+  }
 
   render() {
     return (
       <div className="game">
       <div className="game-board">
-      <Board />
+      <Board id={this.props.id} size={this.props.size} board={this.props.board} />
       </div>
       </div>
     );
@@ -82,42 +85,68 @@ class Game extends React.Component {
 class Spectator extends React.Component {
 
   constructor() {
-    super();
+    super()
     this.state = {
       spectatorId: "DAN", //TODO CHANGE ME
       isSubscribed: false,
-      games: {}
+      games: []
     }
+  }
 
-    this.subscribe()
-    console.log(this.state)
+  componentDidMount() {
+    this.subscribe().then(this.getGames()).then(this.showGames())
   }
 
   subscribe() {
-    if (!this.state.isSubscribed) {
-      createAndSubscribe(this.state.spectatorId)
-      this.state.isSubscribed = true
-    }
-    this.getGames()
-  }
+    var state = this.state
+    return new Promise(function(resolve,reject) {
+      if (!state.isSubscribed) {
+        createAndSubscribe(state.spectatorId)
+        state.isSubscribed = true
+        if (state.isSubscribed) {
+          resolve(console.log("Successfully subscribed"))
+        } else {
+          reject(console.log("error"))
+        }
+      }
+    })}
 
   getGames() {
-    receiveMessages(this.state.spectatorId, this.state.games)
+    var id = this.state.spectatorId
+    var games = this.state.games
+    return new Promise(function (resolve, reject) {
+      receiveMessages(id, games)
+      setTimeout(function(result) {
+        if (games.length > 0) {
+          resolve(console.log("success"))
+        } else {
+          reject(console.log("failure"))
+        }}, 500)
+    })
   }
 
+
   showGames() {
-    for (var game in this.state.games) {
-      <div>
-        <Game id={game.id} size={game.size} board={game.board} />
-        </div>
+    var board = this.state.games[2]
+    var size = this.state.games[1]
+    var id = this.state.games[0]
+    if (board) {
+      this.setState(this.state.game = [])
+      return <div> <Game uuid={id} size={size} board={board} /> </div>
+    } else {
+      return <span> No current games </span>
     }
   }
 
   render() {
     return (
+      <div>
       <div className="spectator">
       You are spectator {this.state.spectatorId}
-      {this.showGames()}
+      </div>
+      <div className="games">
+      {this.showGames}
+      </div>
       </div>
     )
   }
