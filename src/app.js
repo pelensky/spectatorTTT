@@ -98,21 +98,20 @@ class Spectator extends React.Component {
     this.subscribe(this.getGames)
   }
 
+  componentDidUpdate() {
+    this.getGames()
+  }
+
   subscribe(callback) {
     if (!this.state.isSubscribed) {
       createAndSubscribe(this.state.spectatorId)
       this.state.isSubscribed = true
       if (this.state.isSubscribed) {
-        console.log("Successfully subscribed")
         callback()
       } else {
-        console.log("error")
+        console.log("Could not subscribe")
       }
     }
-  }
-
-  findNewBoard() {
-    setInterval( () => this.getGames(), 1000)
   }
 
   getGames() {
@@ -120,10 +119,10 @@ class Spectator extends React.Component {
     receiveMessages(this.state.spectatorId, game, this.setGameState.bind(null, game, this.showGames))
   }
 
-  setGameState(game, callback) {
+  setGameState(game) {
     var gameState = game[0]
     if (gameState) {
-      this.setState({games: gameState}, callback)
+      this.setState({games: gameState}, this.showGames)
     } else {
       console.log("No games to display")
     }
@@ -131,7 +130,6 @@ class Spectator extends React.Component {
 
 
   showGames() {
-    console.log(this.state.games.board)
     if (this.state.games.board) {
       return <div> <Game uuid={this.state.games.uuid} size={this.state.games.size} board={this.state.games.board} /> </div>
     } else {
@@ -147,7 +145,6 @@ class Spectator extends React.Component {
       </div>
     )
   }
-
 }
 
 const app = document.getElementById('app')
