@@ -29,9 +29,9 @@ class Board extends React.Component {
   }
 
   convertBoard() {
-    this.state.id = this.props[0].uuid
-    for (var i = 0; i < this.props[0].board.length; i++){
-      this.state.spaces[this.props[0].board[i]] = (i % 2 == 0) ? "X" : "O"
+    this.state.id = this.props.uuid
+    for (var i = 0; i < this.props.board.length; i++){
+      this.state.spaces[this.props.board] = (i % 2 == 0) ? "X" : "O"
     }
 
   }
@@ -65,6 +65,7 @@ class Board extends React.Component {
 class Game extends React.Component {
   constructor() {
     super()
+    console.log(this.props)
   }
 
   render() {
