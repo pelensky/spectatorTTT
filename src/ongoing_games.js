@@ -73,7 +73,7 @@ function addPermissions(id) {
   });
 }
 
-export function receiveMessages(id, game) {
+export function receiveMessages(id, game, callback) {
   var params = {
     QueueUrl: getQueueUrl(id),
     MaxNumberOfMessages: 1,
@@ -83,8 +83,9 @@ export function receiveMessages(id, game) {
   sqs.receiveMessage(params, function(err, data) {
     if (data.Messages.length > 0) {
       var parsed = parseData(data)
-      removeFromQueue(data.Messages[0], id)
-      game = parsed;
+      // removeFromQueue(data.Messages[0], id) TODO Put this back in
+      game.push(parsed);
+      callback()
     }
   });
 }

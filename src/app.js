@@ -37,8 +37,6 @@ class Board extends React.Component {
   }
 
   render() {
-    console.log(this.props)
-    console.log(this.state)
     this.convertBoard()
     let status = this.state.id
     return (
@@ -67,15 +65,13 @@ class Board extends React.Component {
 class Game extends React.Component {
   constructor() {
     super()
-    console.log("in Game constructor")
-    console.log(this.props)
   }
 
   render() {
     return (
       <div className="game">
       <div className="game-board">
-      <Board id={this.props.id} size={this.props.size} board={this.props.board} />
+      <Board id={this.props.uuid} size={this.props.size} board={this.props.board} />
       </div>
       </div>
     );
@@ -92,39 +88,46 @@ class Spectator extends React.Component {
       games: []
     }
     this.getGames = this.getGames.bind(this)
+    this.setGameState = this.setGameState.bind(this)
+    this.showGames = this.showGames.bind(this)
   }
 
   componentDidMount() {
-    this.subscribe(this.getGames(this.showGames()))
+    this.subscribe(this.getGames)
   }
 
   subscribe(callback) {
-    if (!state.isSubscribed) {
-      createAndSubscribe(state.spectatorId)
-      state.isSubscribed = true
-      if (state.isSubscribed) {
-        resolve(console.log("Successfully subscribed"))
-        callback
+    if (!this.state.isSubscribed) {
+      createAndSubscribe(this.state.spectatorId)
+      this.state.isSubscribed = true
+      if (this.state.isSubscribed) {
+        console.log("Successfully subscribed")
+        callback()
       } else {
         console.log("error")
       }
     }
   }
 
-  getGames(callback) {
-    receiveMessages(this.state.spectatorId, game)
-    if (game) {
-      this.setState({games: game})
+  getGames() {
+    let game = []
+    receiveMessages(this.state.spectatorId, game, this.setGameState.bind(null, game, this.showGames))
+  }
+
+  setGameState(game, callback) {
+    var gameState = game[0]
+    if (gameState) {
+      this.setState({games: gameState})
       callback()
     } else {
-      console.log("failure")
+      console.log("No games to display")
     }
   }
 
 
   showGames() {
-    if (this.state.games) {
-      return <div> <Game uuid={this.state.uuid} size={this.state.size} board={this.state.board} /> </div>
+    if (this.state.games.board) {
+      return <div> <Game uuid={this.state.games.uuid} size={this.state.games.size} board={this.state.games.board} /> </div>
     } else {
       return <span> No current games </span>
     }
