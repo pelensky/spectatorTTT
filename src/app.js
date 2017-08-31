@@ -27,10 +27,10 @@ class Board extends React.Component {
      this.convertBoard()
   }
 
-  renderSpace(i) {
+  renderSpace(board, i) {
     return (
       <Space
-      value={this.state.spaces[i]}
+      value={board[i]}
       />
     );
   }
@@ -40,27 +40,28 @@ class Board extends React.Component {
     for (var i = 0; i < this.props.board.length; i++){
       board[this.props.board[i]] = (i % 2 == 0) ? "X" : "O"
     }
-    this.setState({spaces: board})
+    return board
   }
 
   render() {
+    let board = this.convertBoard()
     return (
       <div>
       <div className="status">{status}</div>
       <div className="board-row">
-      {this.renderSpace(0)}
-      {this.renderSpace(1)}
-      {this.renderSpace(2)}
+      {this.renderSpace(board, 0)}
+      {this.renderSpace(board, 1)}
+      {this.renderSpace(board, 2)}
       </div>
       <div className="board-row">
-      {this.renderSpace(3)}
-      {this.renderSpace(4)}
-      {this.renderSpace(5)}
+      {this.renderSpace(board, 3)}
+      {this.renderSpace(board, 4)}
+      {this.renderSpace(board, 5)}
       </div>
       <div className="board-row">
-      {this.renderSpace(6)}
-      {this.renderSpace(7)}
-      {this.renderSpace(8)}
+      {this.renderSpace(board, 6)}
+      {this.renderSpace(board, 7)}
+      {this.renderSpace(board, 8)}
       </div>
       </div>
     );
