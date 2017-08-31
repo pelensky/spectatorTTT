@@ -90,7 +90,7 @@ class Spectator extends React.Component {
   constructor() {
     super()
     this.state = {
-      spectatorId: "DAN", //TODO CHANGE ME
+      spectatorId: createUuid(),
       isSubscribed: false,
       games: {}
     }
