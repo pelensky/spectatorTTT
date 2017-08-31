@@ -83,7 +83,7 @@ export function receiveMessages(id, game, callback) {
   sqs.receiveMessage(params, function(err, data) {
     if (data.Messages.length > 0) {
       var parsed = parseData(data)
-      // removeFromQueue(data.Messages[0], id) TODO Put this back in
+      removeFromQueue(data.Messages[0], id)
       game.push(parsed);
       callback()
     }

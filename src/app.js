@@ -19,7 +19,11 @@ class Board extends React.Component {
     };
   }
 
-  componentDidMount() {
+  componenteDidMount() {
+    this.convertBoard()
+  }
+
+  componentDidUpdate() {
     this.convertBoard()
   }
 
@@ -120,7 +124,7 @@ class Spectator extends React.Component {
   }
 
   setGameState(game) {
-    var gameState = game[0]
+    var gameState = Object.assign({}, game[0])
     if (gameState) {
       this.setState({games: gameState}, this.showGames)
     } else {
