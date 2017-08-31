@@ -24,7 +24,7 @@ class Board extends React.Component {
   }
 
   componentDidUpdate() {
-    this.convertBoard()
+     this.convertBoard()
   }
 
   renderSpace(i) {
@@ -76,6 +76,7 @@ class Game extends React.Component {
     return (
       <div className="game">
       <div className="game-board">
+      Game ID: {this.props.uuid}
       <Board id={this.props.uuid} size={this.props.size} board={this.props.board} />
       </div>
       </div>
@@ -100,10 +101,7 @@ class Spectator extends React.Component {
 
   componentDidMount() {
     this.subscribe(this.getGames)
-  }
-
-  componentDidUpdate() {
-    this.getGames()
+    setInterval( () => this.getGames(), 100)
   }
 
   subscribe(callback) {
@@ -137,7 +135,7 @@ class Spectator extends React.Component {
     if (this.state.games.board) {
       return <div> <Game uuid={this.state.games.uuid} size={this.state.games.size} board={this.state.games.board} /> </div>
     } else {
-      return <span> No current games </span>
+      return <div> No current games </div>
     }
   }
 
