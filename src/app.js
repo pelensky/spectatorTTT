@@ -91,17 +91,12 @@ class Spectator extends React.Component {
     this.state = {
       spectatorId: "DAN", //TODO CHANGE ME
       isSubscribed: false,
-      games: []
+      games: {}
     }
-    this.componentDidMount = this.componentDidMount.bind(this)
     this.getGames = this.getGames.bind(this)
-    this.setGameState = this.setGameState.bind(this)
     this.showGames = this.showGames.bind(this)
-  }
-
-  componentDidMount() {
     this.subscribe(this.getGames)
-    setInterval( () => this.getGames(), 100)
+    setInterval( () => this.getGames(), 500)
   }
 
   subscribe(callback) {
@@ -117,19 +112,12 @@ class Spectator extends React.Component {
   }
 
   getGames() {
-    let game = []
-    receiveMessages(this.state.spectatorId, game, this.setGameState.bind(null, game, this.showGames))
-  }
-
-  setGameState(game) {
-    var gameState = Object.assign({}, game[0])
-    if (gameState) {
-      this.setState({games: gameState}, this.showGames)
-    } else {
-      console.log("No games to display")
+    let self = this
+    receiveMessages(this.state.spectatorId, function(game) {
+      self.setState({games: game})
     }
+    )
   }
-
 
   showGames() {
     if (this.state.games.board) {

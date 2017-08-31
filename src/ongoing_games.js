@@ -73,7 +73,7 @@ function addPermissions(id) {
   });
 }
 
-export function receiveMessages(id, game, callback) {
+export function receiveMessages(id, callback) {
   var params = {
     QueueUrl: getQueueUrl(id),
     MaxNumberOfMessages: 1,
@@ -84,8 +84,7 @@ export function receiveMessages(id, game, callback) {
     if (data.Messages.length > 0) {
       var parsed = parseData(data)
       removeFromQueue(data.Messages[0], id)
-      game.push(parsed);
-      callback()
+      callback(parsed);
     }
   });
 }
