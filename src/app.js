@@ -27,10 +27,10 @@ class Board extends React.Component {
      this.convertBoard()
   }
 
-  renderSpace(i) {
+  renderSpace(board, i) {
     return (
       <Space
-      value={this.state.spaces[i]}
+      value={board[i]}
       />
     );
   }
@@ -40,27 +40,28 @@ class Board extends React.Component {
     for (var i = 0; i < this.props.board.length; i++){
       board[this.props.board[i]] = (i % 2 == 0) ? "X" : "O"
     }
-    this.setState({spaces: board})
+    return board
   }
 
   render() {
+    let board = this.convertBoard()
     return (
       <div>
       <div className="status">{status}</div>
       <div className="board-row">
-      {this.renderSpace(0)}
-      {this.renderSpace(1)}
-      {this.renderSpace(2)}
+      {this.renderSpace(board, 0)}
+      {this.renderSpace(board, 1)}
+      {this.renderSpace(board, 2)}
       </div>
       <div className="board-row">
-      {this.renderSpace(3)}
-      {this.renderSpace(4)}
-      {this.renderSpace(5)}
+      {this.renderSpace(board, 3)}
+      {this.renderSpace(board, 4)}
+      {this.renderSpace(board, 5)}
       </div>
       <div className="board-row">
-      {this.renderSpace(6)}
-      {this.renderSpace(7)}
-      {this.renderSpace(8)}
+      {this.renderSpace(board, 6)}
+      {this.renderSpace(board, 7)}
+      {this.renderSpace(board, 8)}
       </div>
       </div>
     );
@@ -91,17 +92,12 @@ class Spectator extends React.Component {
     this.state = {
       spectatorId: "DAN", //TODO CHANGE ME
       isSubscribed: false,
-      games: []
+      games: {}
     }
-    this.componentDidMount = this.componentDidMount.bind(this)
     this.getGames = this.getGames.bind(this)
-    this.setGameState = this.setGameState.bind(this)
     this.showGames = this.showGames.bind(this)
-  }
-
-  componentDidMount() {
     this.subscribe(this.getGames)
-    setInterval( () => this.getGames(), 100)
+    setInterval( () => this.getGames(), 500)
   }
 
   subscribe(callback) {
@@ -117,19 +113,12 @@ class Spectator extends React.Component {
   }
 
   getGames() {
-    let game = []
-    receiveMessages(this.state.spectatorId, game, this.setGameState.bind(null, game, this.showGames))
-  }
-
-  setGameState(game) {
-    var gameState = Object.assign({}, game[0])
-    if (gameState) {
-      this.setState({games: gameState}, this.showGames)
-    } else {
-      console.log("No games to display")
+    let self = this
+    receiveMessages(this.state.spectatorId, function(game) {
+      self.setState({games: game})
     }
+    )
   }
-
 
   showGames() {
     if (this.state.games.board) {
